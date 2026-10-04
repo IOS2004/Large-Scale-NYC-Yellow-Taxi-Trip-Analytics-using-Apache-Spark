@@ -43,3 +43,12 @@ services:
     volumes:
       - ./data:/home/jovyan/work/data
       - ./notebooks:/home/jovyan/work/notebooks
+
+  dashboard:
+    image: node:20-alpine
+    working_dir: /app
+    volumes:
+      - ./dashboard:/app
+    ports:
+      - "3000:3000"
+    command: sh -c "npm install && npm run dev"

@@ -20,6 +20,12 @@ jobs:
         distribution: 'temurin'
         cache: 'sbt'
         
+    - name: Install sbt
+      run: |
+        curl -fL https://github.com/sbt/sbt/releases/download/v1.9.7/sbt-1.9.7.tgz | tar xz
+        sudo mv sbt /usr/local/
+        sudo ln -s /usr/local/sbt/bin/sbt /usr/local/bin/sbt
+
     - name: Compile Spark Project
       working-directory: ./source
       run: sbt clean compile
