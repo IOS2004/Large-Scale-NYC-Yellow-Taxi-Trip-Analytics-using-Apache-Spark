@@ -24,7 +24,6 @@ object TLCMachineLearningJob {
     val tripDataSchema = SchemaDefinitions.GetTLCCleanedDataSchema()
 
     val tripDataDf = spark.read
-      .schema(tripDataSchema)
       .format("delta")
       .load(inputPath)
 

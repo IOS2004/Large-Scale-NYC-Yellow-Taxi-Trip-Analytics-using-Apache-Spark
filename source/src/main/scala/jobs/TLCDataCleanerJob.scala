@@ -33,8 +33,6 @@ object TLCDataCleanerJob {
 
     // Read in TLC Trip Record Data CSV file into DataFrame
     val tripDataDf = spark.read
-      .schema(tripDataSchema)
-      .option("recursiveFileLookup", "true") // Reads into each year folder
       .option("dateFormat", Formats.ORIGINAL_TLC_DATE_FORMAT)
       .format("delta")
       .load(inputPath)

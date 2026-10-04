@@ -1,7 +1,7 @@
 name := "nyc-yellow-taxi-analysis"
 version := "0.1.0-SNAPSHOT"
 
-scalaVersion := "2.13.12"
+scalaVersion := "2.12.18"
 
 val sparkVersion = "3.5.0"
 val deltaVersion = "3.0.0"

@@ -4,23 +4,7 @@ import { useState, useEffect } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { Car, CreditCard, Activity, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 
-// Mock data based on our Spark aggregated output
-const rollingAvgData = [
-  { date: '2025-10-01', Manhattan: 45000, Brooklyn: 15000, Queens: 12000 },
-  { date: '2025-10-02', Manhattan: 46200, Brooklyn: 15300, Queens: 12100 },
-  { date: '2025-10-03', Manhattan: 47500, Brooklyn: 15800, Queens: 12500 },
-  { date: '2025-10-04', Manhattan: 49000, Brooklyn: 16200, Queens: 13000 },
-  { date: '2025-10-05', Manhattan: 52000, Brooklyn: 17000, Queens: 14000 },
-  { date: '2025-10-06', Manhattan: 51500, Brooklyn: 16800, Queens: 13800 },
-  { date: '2025-10-07', Manhattan: 48000, Brooklyn: 15500, Queens: 12200 },
-];
 
-const topZonesData = [
-  { hour: '08:00', 'JFK Airport': 1200, 'Midtown': 2500, 'Financial Dist': 1800 },
-  { hour: '12:00', 'JFK Airport': 1500, 'Midtown': 3100, 'Financial Dist': 1400 },
-  { hour: '18:00', 'JFK Airport': 2200, 'Midtown': 4200, 'Financial Dist': 2100 },
-  { hour: '22:00', 'JFK Airport': 1800, 'Midtown': 3500, 'Financial Dist': 1200 },
-];
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -40,9 +24,18 @@ const CustomTooltip = ({ active, payload, label }) => {
 
 export default function Dashboard() {
   const [mounted, setMounted] = useState(false);
+  const [rollingAvgData, setRollingAvgData] = useState([]);
+  const [topZonesData, setTopZonesData] = useState([]);
 
   useEffect(() => {
     setMounted(true);
+    fetch('/data.json')
+      .then((res) => res.json())
+      .then((data) => {
+        setRollingAvgData(data.rollingAvgData.slice(-30)); // Show last 30 days
+        setTopZonesData(data.topZonesData);
+      })
+      .catch((err) => console.error('Error fetching data:', err));
   }, []);
 
   if (!mounted) return null;
@@ -124,13 +117,13 @@ export default function Dashboard() {
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={topZonesData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
-                <XAxis dataKey="hour" stroke="#94a3b8" tick={{fill: '#94a3b8'}} axisLine={false} tickLine={false} />
+                <XAxis dataKey="hour_str" stroke="#94a3b8" tick={{fill: '#94a3b8'}} axisLine={false} tickLine={false} />
                 <YAxis stroke="#94a3b8" tick={{fill: '#94a3b8'}} axisLine={false} tickLine={false} />
                 <Tooltip content={<CustomTooltip />} />
                 <Legend wrapperStyle={{ paddingTop: '20px' }} />
-                <Bar dataKey="Midtown" fill="#10b981" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Upper East Side South" fill="#10b981" radius={[4, 4, 0, 0]} />
                 <Bar dataKey="JFK Airport" fill="#f59e0b" radius={[4, 4, 0, 0]} />
-                <Bar dataKey="Financial Dist" fill="#ec4899" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="Penn Station/Madison Sq West" fill="#ec4899" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

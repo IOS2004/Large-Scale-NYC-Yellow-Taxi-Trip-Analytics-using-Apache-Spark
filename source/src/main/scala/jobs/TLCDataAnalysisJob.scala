@@ -35,8 +35,6 @@ object TLCDataAnalysisJob {
 
     // Read in TLC Trip Record Data CSV file into DataFrame
     val tripDataDf = spark.read
-      .schema(tripDataSchema)
-      .option("recursiveFileLookup", "true") // Reads into each year folder
       .format("delta")
       .load(inputPath)
 

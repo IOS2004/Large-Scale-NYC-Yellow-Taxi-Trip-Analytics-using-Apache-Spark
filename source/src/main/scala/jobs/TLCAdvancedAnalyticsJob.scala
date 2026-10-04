@@ -25,7 +25,6 @@ object TLCAdvancedAnalyticsJob {
     val taxiZoneSchema = SchemaDefinitions.GetTaxiZoneSchema()
 
     val tripDataDf = spark.read
-      .schema(tripDataSchema)
       .format("delta")
       .load(inputPath)
 

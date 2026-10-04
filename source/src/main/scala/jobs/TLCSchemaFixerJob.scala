@@ -6,9 +6,6 @@ import org.apache.spark.sql.functions.input_file_name
 import tranformations.ColumnMappingTransf._
 
 import java.nio.file.{Files, Paths}
-import scala.collection.parallel.CollectionConverters.ArrayIsParallelizable
-import scala.collection.parallel.mutable.ParArray
-
 object TLCSchemaFixerJob {
   /**
    * Set schema columns to match the same data type across all the Parquet files.
@@ -35,7 +32,7 @@ object TLCSchemaFixerJob {
       .distinct()
       .collect()
 
-    val convertedDfMap = parquetFiles.par.map { row =>
+    val convertedDfMap = parquetFiles.map { row =>
       val filePath = row.getString(0)
 
       val df = spark.read.parquet(filePath)
@@ -54,11 +51,14 @@ object TLCSchemaFixerJob {
     SaveConvertedDataFrame(convertedDfMap, outputPath)
   }
 
-  private def SaveConvertedDataFrame(convertedDfMap: ParArray[(String, Dataset[Row])], outputPath: String): Unit = {
-    convertedDfMap.par.foreach { case (fileName, df) =>
+  private def SaveConvertedDataFrame(convertedDfMap: Array[(String, Dataset[Row])], outputPath: String): Unit = {
+    var isFirst = true
+    convertedDfMap.foreach { case (fileName, df) =>
       df.write
         .format("delta")
-        .save(outputPath + "/" + fileName)
+        .mode(if (isFirst) "overwrite" else "append")
+        .save(outputPath)
+      isFirst = false
     }
   }
 }
