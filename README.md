@@ -14,18 +14,7 @@ The project has been modernized to reflect 2026 data engineering best practices:
 - **Infrastructure:** Docker & Docker Compose
 - **DevOps:** GitHub Actions CI/CD Pipeline
 
-```mermaid
-graph LR
-    A["TLC S3 Bucket (Parquet)"] --> B("Download Script")
-    B --> C["Raw Data Directory"]
-    C --> D{"Spark: Schema Fixer"}
-    D --> E{"Spark: Cleaner & Processor"}
-    E --> F[("Delta Lake: Clean Data")]
-    F --> G{"Spark: Advanced Analytics"}
-    F --> H{"Spark MLlib: Tip Prediction"}
-    G --> I[("Delta Lake: Aggregations")]
-    I --> J["Jupyter Notebook: Visualization"]
-```
+![NYC Yellow Taxi Distributed Pipeline Architecture](./docs/architecture_pipeline.svg)
 
 ---
 

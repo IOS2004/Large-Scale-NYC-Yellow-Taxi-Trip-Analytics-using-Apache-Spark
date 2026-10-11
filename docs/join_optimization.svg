@@ -1,0 +1,118 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" width="100%" height="100%" style="background:#09090b; border-radius:12px; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <linearGradient id="cardBg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#18181b"/>
+      <stop offset="100%" stop-color="#121215"/>
+    </linearGradient>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444"/>
+    </marker>
+    <marker id="arrowGreen2" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+    </marker>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Title Header -->
+  <g transform="translate(40, 24)">
+    <text x="0" y="16" fill="#f59e0b" font-size="12" font-weight="700" letter-spacing="1.5">QUERY OPTIMIZATION BENCHMARK</text>
+    <text x="0" y="38" fill="#fafafa" font-size="18" font-weight="700">Sort-Merge Join (SMJ) vs. Broadcast Hash Join (BHJ)</text>
+    <text x="650" y="36" fill="#71717a" font-size="12">Evaluated on 39,642,810 Trip Records &amp; 265 Taxi Zones</text>
+  </g>
+
+  <!-- PANEL 1: STANDARD SORT-MERGE JOIN (SLOW) -->
+  <g transform="translate(40, 80)" filter="url(#shadow)">
+    <rect width="920" height="150" rx="10" fill="url(#cardBg)" stroke="#ef4444" stroke-width="1.2" stroke-opacity="0.8"/>
+    
+    <!-- Tag -->
+    <rect x="20" y="16" width="220" height="24" rx="4" fill="#450a0a"/>
+    <text x="30" y="32" fill="#f87171" font-size="11" font-weight="700">❌ STANDARD SORT-MERGE JOIN</text>
+    <text x="255" y="33" fill="#a1a1aa" font-size="12">Default Spark join without broadcast hint</text>
+    
+    <!-- Time Badge -->
+    <rect x="770" y="14" width="130" height="28" rx="6" fill="#7f1d1d"/>
+    <text x="785" y="33" fill="#fca5a5" font-size="13" font-weight="700">42.8 SECONDS</text>
+
+    <!-- Flow Elements -->
+    <!-- Input 1 -->
+    <rect x="20" y="60" width="160" height="65" rx="6" fill="#27272a"/>
+    <text x="32" y="82" fill="#e4e4e7" font-size="11" font-weight="600">39.6M Trip Rows</text>
+    <text x="32" y="98" fill="#71717a" font-size="10">High-volume table</text>
+    <text x="32" y="114" fill="#f87171" font-size="9">Size: ~2.8 GB</text>
+
+    <!-- Arrow 1 -->
+    <line x1="180" y1="92" x2="225" y2="92" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+    <!-- Shuffle Box -->
+    <rect x="230" y="55" width="230" height="75" rx="6" fill="#3f1a1a" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+    <text x="245" y="78" fill="#fca5a5" font-size="11" font-weight="700">NETWORK SHUFFLE</text>
+    <text x="245" y="96" fill="#e4e4e7" font-size="10">• 2.84 GB transferred across nodes</text>
+    <text x="245" y="112" fill="#e4e4e7" font-size="10">• Hash partitioned on pickup_loc_id</text>
+
+    <!-- Arrow 2 -->
+    <line x1="460" y1="92" x2="505" y2="92" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+    <!-- Disk Sort Box -->
+    <rect x="510" y="60" width="180" height="65" rx="6" fill="#27272a"/>
+    <text x="524" y="82" fill="#e4e4e7" font-size="11" font-weight="600">Sort &amp; Merge Phase</text>
+    <text x="524" y="98" fill="#ef4444" font-size="10">312 MB Disk Spill</text>
+    <text x="524" y="112" fill="#71717a" font-size="9">4 Distributed Stages</text>
+
+    <!-- Arrow 3 -->
+    <line x1="690" y1="92" x2="735" y2="92" stroke="#ef4444" stroke-width="2" marker-end="url(#arrowRed)"/>
+
+    <!-- Result Box -->
+    <rect x="740" y="60" width="160" height="65" rx="6" fill="#27272a"/>
+    <text x="754" y="82" fill="#fafafa" font-size="11" font-weight="600">Output DataFrame</text>
+    <text x="754" y="102" fill="#f87171" font-size="12" font-weight="700">Heavy Latency</text>
+  </g>
+
+  <!-- PANEL 2: OPTIMIZED BROADCAST HASH JOIN (FAST) -->
+  <g transform="translate(40, 255)" filter="url(#shadow)">
+    <rect width="920" height="150" rx="10" fill="url(#cardBg)" stroke="#10b981" stroke-width="1.5"/>
+    
+    <!-- Tag -->
+    <rect x="20" y="16" width="220" height="24" rx="4" fill="#064e3b"/>
+    <text x="30" y="32" fill="#34d399" font-size="11" font-weight="700">⚡ BROADCAST HASH JOIN</text>
+    <text x="255" y="33" fill="#a1a1aa" font-size="12">Applied via broadcast(taxiZoneDf) in Scala</text>
+    
+    <!-- Time Badge -->
+    <rect x="750" y="14" width="150" height="28" rx="6" fill="#065f46"/>
+    <text x="765" y="33" fill="#6ee7b7" font-size="13" font-weight="700">8.4 SECS (5.1x FASTER)</text>
+
+    <!-- Flow Elements -->
+    <!-- Input 1: Dimension Table -->
+    <rect x="20" y="60" width="160" height="65" rx="6" fill="#27272a"/>
+    <text x="32" y="82" fill="#fbbf24" font-size="11" font-weight="600">265 Taxi Zones</text>
+    <text x="32" y="98" fill="#71717a" font-size="10">Small Dimension (12 KB)</text>
+    <text x="32" y="114" fill="#34d399" font-size="9">Broadcast Candidate</text>
+
+    <!-- Arrow 1 -->
+    <line x1="180" y1="92" x2="225" y2="92" stroke="#10b981" stroke-width="2" marker-end="url(#arrowGreen2)"/>
+
+    <!-- Broadcast Box -->
+    <rect x="230" y="55" width="230" height="75" rx="6" fill="#064e3b" stroke="#10b981" stroke-width="1"/>
+    <text x="245" y="78" fill="#a7f3d0" font-size="11" font-weight="700">IN-MEMORY BROADCAST</text>
+    <text x="245" y="96" fill="#e4e4e7" font-size="10">• Sent to all Executor RAM pools</text>
+    <text x="245" y="112" fill="#34d399" font-size="10">• ZERO MB Network Shuffle I/O</text>
+
+    <!-- Arrow 2 -->
+    <line x1="460" y1="92" x2="505" y2="92" stroke="#10b981" stroke-width="2" marker-end="url(#arrowGreen2)"/>
+
+    <!-- In-Memory Lookup Box -->
+    <rect x="510" y="60" width="180" height="65" rx="6" fill="#27272a"/>
+    <text x="524" y="82" fill="#e4e4e7" font-size="11" font-weight="600">O(1) Hash Map Lookup</text>
+    <text x="524" y="98" fill="#34d399" font-size="10">0 MB Disk Spill</text>
+    <text x="524" y="112" fill="#71717a" font-size="9">2 Distributed Stages</text>
+
+    <!-- Arrow 3 -->
+    <line x1="690" y1="92" x2="735" y2="92" stroke="#10b981" stroke-width="2" marker-end="url(#arrowGreen2)"/>
+
+    <!-- Result Box -->
+    <rect x="740" y="60" width="160" height="65" rx="6" fill="#27272a"/>
+    <text x="754" y="82" fill="#fafafa" font-size="11" font-weight="600">Output DataFrame</text>
+    <text x="754" y="102" fill="#34d399" font-size="12" font-weight="700">Optimal Pipeline</text>
+  </g>
+</svg>
